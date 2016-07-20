@@ -90,7 +90,7 @@ def action_rooms(player, kwargs):
             print "Not enough resources"
             return False
 
-    #Space is availible
+    #Space is availible FIXME: for stables, pasture is also ok
     for i,j in rooms + stables:
         if player['board'][i][j]['type'] != 'empty':
             print 'Space',i,j,'Not availible'
