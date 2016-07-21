@@ -45,6 +45,9 @@ def new_player():
 def add_room(player, row, col):
     player['board'][row][col]={'type':'room', 'people':0}
 
+def add_field(player, row, col):
+    player['board'][row][col]={'type':'field', 'amt':0}
+
 def add_stable(player, row, col):
     if player['board'][row][col]['type'] != 'pasture':
         print 'error' #FIXME
@@ -127,11 +130,28 @@ def action_reed(player, kwargs):
 def action_clay(player, kwargs):
     player['resources']['clay'] += kwargs['amt']
     return True
+def action_stone(player, kwargs):
+    player['resources']['stone'] += kwargs['amt']
+    return True
 def action_fishing(player, kwargs):
     player['resources']['food'] += kwargs['amt']
     return True
 def action_daylaborer(player, kwargs):
     player['resources']['food'] += 2
+    return True
+
+def action_plow(player, kwargs):
+    if 'field' not in kwargs:
+        print "field=[row,col]"
+        return False
+    
+    i,j = kwargs['field']
+    #Space is availible
+    if player['board'][i][j]['type'] != 'empty':
+        print 'Space',i,j,'Not availible'
+        return False
+        
+    add_field(player, i,j)
     return True
 
 def action_pass(player, kwargs):
@@ -172,8 +192,8 @@ actions[1]['name'] = 'Minor Improvement --'
 actions[1]['fxn'] = action_pass
 actions[2]['name'] = 'Grain'
 actions[2]['fxn'] = action_grain
-actions[3]['name'] = 'Plow --'
-actions[3]['fxn'] = action_pass
+actions[3]['name'] = 'Plow'
+actions[3]['fxn'] = action_plow
 actions[4]['name'] = 'Occupation --'
 actions[4]['fxn'] = action_pass
 actions[5]['name'] = 'Day Laborer'
@@ -187,6 +207,37 @@ actions[8]['fxn'] = action_reed
 actions[9]['name'] = 'Fishing'
 actions[9]['fxn'] = action_fishing
 
+#actions.append({'name':'Stone', 'fxn':action_stone, 'amt':0, 'taken':0})
+
+action_cards = [
+    [
+        {'name':'Sheep', 'fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Fences --','fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'M/m Improvement --','fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Sow & Bake --','fxn':action_pass, 'amt':0, 'taken':0}
+    ],
+    [
+        {'name':'Family Growth -> m', 'fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Rennovation -> M/m', 'fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Stone', 'fxn':action_stone, 'amt':0, 'taken':0},
+    ],
+    [
+        {'name':'Veges', 'fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Boars', 'fxn':action_pass, 'amt':0, 'taken':0},
+    ],
+    [
+        {'name':'Stone', 'fxn':action_stone, 'amt':0, 'taken':0},
+        {'name':'Cattle', 'fxn':action_pass, 'amt':0, 'taken':0},
+    ],
+    [
+        {'name':'Family w/o Space', 'fxn':action_pass, 'amt':0, 'taken':0},
+        {'name':'Plow & Sow', 'fxn':action_pass, 'amt':0, 'taken':0},
+    ],
+    [
+        {'name':'Rennovate & Fences', 'fxn':action_pass, 'amt':0, 'taken':0},
+    ]
+
+]
 
 ####
 ## Rounds
